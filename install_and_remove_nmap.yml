@@ -1,0 +1,18 @@
+---
+- name: remove nmap
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: remove nmap
+      apt:
+        name: nmap
+        state: absent
+    - name: update repo
+      apt:
+        update_cache: true
+    - name: install nmap
+      apt:
+        name: nmap
+        state: latest      
+  
