@@ -1,0 +1,20 @@
+---
+- name: create files and directorys
+  hosts: all
+  become: false
+  tasks:
+    - name: create directorys
+      file:
+        path: "{{ home }}/Desktop/mydir"
+        state: directory
+        mode: "0755" 
+    - name: create file
+      file:
+        path: "{{home}}/Desktop/mydir/log.txt"
+        state: touch
+        mode: '0644'
+    - name: write to file
+      lineinfile:
+        path: "{{home}}/Desktop/mydir/log.txt"
+        line: "Application started at {{ ansible_date_time.iso8601 }}"
+        create: yes

@@ -1,14 +1,14 @@
 ---
 
-- name: run command dbendon username
-  hosts: all
-  become: true
-  tasks:
-    - name: intall tmux in debian 
-      apt:
-        name: tmux
-        state: latest
-      when: ansible_facts['user_id'] == "root"
+#- name: run command dbendon username
+#  hosts: all
+#  become: true
+#  tasks:
+#    - name: intall tmux in debian 
+#      apt:
+#        name: tmux
+#        state: latest
+#      when: ansible_facts['user_id'] == "root"
 
 
 # when you get varuble from inventory file
@@ -16,3 +16,21 @@
 
 #when you get varuble from gather_facts module
 #when: ansible_facts['user_id'] == "root"
+
+- name: install tmux and apache then update in all managed noods
+  hosts: all
+  become: true
+  tasks:
+    - name: install tmux and apache then update
+      package:    # package is a module that find system package maneger ex(apt,apk,yum,dnf)
+        name: 
+          - "{{tmux_package}}"    # this mean tmux_package is a varuble define in inventory file
+          - "{{apache_package}}"   # this mean apache_package is a varuble define in inventory file
+        state: latest
+        update_cache: true    # sudo apt update
+
+    - name: start apache server
+      service:
+        name: apache2
+        state: started
+
