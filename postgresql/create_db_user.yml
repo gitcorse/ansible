@@ -1,0 +1,48 @@
+---
+
+- name: create datebase and user
+  hosts: db
+  become: true
+  tasks:
+    - name: cearte database
+      postgresql_db:
+        name: mydb
+        state: present
+      become_user: postgres
+
+
+
+    - name: create db_user
+      postgresql_user:
+        name: admin
+        password: admin
+        state: present
+      become_user: postgres
+
+
+
+    - name: give user access to mydb
+      community.postgresql.postgresql_privs:
+        login_db: mydb
+        roles: admin
+        type: database
+        privs: all
+        state: present
+      become_user: postgres
+
+    - name: enable md5 auth
+      community.postgresql.postgresql_pg_hba:
+        dest: "/etc/postgresql/17/main/pg_hba.conf"
+        contype: host
+        create: true
+        state: present
+      become_user: postgres
+
+    - name: create some database contant
+      become_user: postgres
+      shell: psql mydb < /tmp/dump.sql
+
+    - name: handler
+      service:
+        name: postgresql
+        state: restarted
