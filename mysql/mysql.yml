@@ -1,0 +1,36 @@
+---
+
+- name: lanche my mariadb server
+  hosts: all
+  become: true
+  tasks:
+    - name: check mariadb is installed or not
+      apt:
+        name: 
+          - mariadb-server
+          - python3-pymysql
+        state: present
+        update_cache: true
+      ignore_errors: true
+
+    - name: create database if is installed
+      mysql_db:
+        name: site
+        state: present
+        login_unix_socket: /run/mysqld/mysqld.sock
+
+    - name: run query in databas to create table
+      mysql_query:
+        login_db: site
+        query:
+          - create table users (id VARCHAR(16), username VARCHAR(255) ,password VARCHAR(255))
+        login_unix_socket: /run/mysqld/mysqld.sock
+      ignore_errors: true
+
+    - name: run query in databas to insert data into table
+      mysql_query:
+        login_db: site
+        query:
+          - INSERT INTO users (id ,username ,password) VALUES (1 ,'admin' ,'password'), (2 ,'KALI' ,'kai'), (3,'WHOAMI', 'whoami')
+          #- DELETE FROM users where id = '1'
+        login_unix_socket: /run/mysqld/mysqld.sock
